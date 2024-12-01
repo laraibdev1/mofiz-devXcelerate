@@ -86,7 +86,7 @@ export default function SignUp() {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: err instanceof Error ? err.message : "Failed to create account",
+        description: err instanceof Error ? err.message : "Failed to create account!",
       });
     } finally {
       setIsLoading(false);
