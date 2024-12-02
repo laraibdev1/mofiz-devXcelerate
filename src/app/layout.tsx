@@ -1,5 +1,5 @@
 import React from "react";
-import { UserProvider } from '@auth0/nextjs-auth0/client';
+// import { UserProvider } from '@auth0/nextjs-auth0/client';
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -30,9 +30,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-       <UserProvider>
+       {/* <UserProvider> */}
       <body>{children}</body>
-    </UserProvider>
+    {/* </UserProvider> */}
       </body>
     </html>
   );

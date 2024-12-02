@@ -1,15 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Icons } from "@/app/components/ui/icons";
-import { useToast } from "@/app/components/ui/use-toast";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import Link from 'next/link';
+
+interface Notification {
+  type: 'success' | 'error';
+  message: string;
+}
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -17,31 +21,33 @@ export default function SignupPage() {
     email: '',
     password: '',
     confirmPassword: '',
+    terms: false,
+    marketing: false,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(1);
-  const { toast } = useToast();
+  const [notification, setNotification] = useState<Notification | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const showNotification = (type: 'success' | 'error', message: string) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 5000); // Hide notification after 5 seconds
   };
 
   const handleNextStep = () => {
     if (step === 1 && (!formData.username || !formData.email)) {
-      toast({
-        variant: "destructive",
-        title: "Missing Information",
-        description: "Please fill in all fields before proceeding.",
-      });
+      showNotification('error', "Please fill in all fields before proceeding.");
       return;
     }
     if (step === 2 && (!formData.password || !formData.confirmPassword)) {
-      toast({
-        variant: "destructive",
-        title: "Missing Information",
-        description: "Please fill in all fields before proceeding.",
-      });
+      showNotification('error', "Please fill in all fields before proceeding.");
       return;
     }
     setStep(prev => prev + 1);
@@ -56,17 +62,19 @@ export default function SignupPage() {
     setIsLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
-      toast({
-        variant: "destructive",
-        title: "Passwords do not match",
-        description: "Please ensure both passwords are identical",
-      });
+      showNotification('error', "Passwords do not match. Please ensure both passwords are identical.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!formData.terms) {
+      showNotification('error', "Please accept the terms and conditions to proceed.");
       setIsLoading(false);
       return;
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:4000/api/auth/register", {
+      const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -75,28 +83,21 @@ export default function SignupPage() {
           username: formData.username,
           email: formData.email,
           password: formData.password,
+          marketing: formData.marketing,
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        toast({
-          title: "Account created successfully!",
-          description: "Welcome to DevXcelerate. You can now log in.",
-        });
-        // Reset form and go back to step 1
-        setFormData({ username: '', email: '', password: '', confirmPassword: '' });
+        showNotification('success', "Account created successfully! Welcome to DevXcelerate. You can now log in.");
+        setFormData({ username: '', email: '', password: '', confirmPassword: '', terms: false, marketing: false });
         setStep(1);
       } else {
         throw new Error(data.error || "Failed to create account");
       }
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Signup failed",
-        description: error instanceof Error ? error.message : "An unexpected error occurred",
-      });
+      showNotification('error', error instanceof Error ? error.message : "An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -110,6 +111,13 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/20 to-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      {notification && (
+        <div className={`fixed top-4 right-4 p-4 rounded-md ${
+          notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        } text-white`}>
+          {notification.message}
+        </div>
+      )}
       <motion.div
         className="max-w-md w-full space-y-8"
         initial={{ opacity: 0, y: -50 }}
@@ -121,12 +129,12 @@ export default function SignupPage() {
             initial={{ scale: 0.5, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 150 }}
-            className="w-32 h-32 mx-auto bg-primary rounded-full flex items-center justify-center shadow-lg"
+            className="w-24 h-24 mx-auto bg-primary rounded-full flex items-center justify-center shadow-lg"
           >
-            <Icons.user className="w-16 h-16 text-primary-foreground" />
+            <Icons.user className="w-12 h-12 text-primary-foreground" />
           </motion.div>
           <motion.h2 
-            className="mt-6 text-center text-4xl font-extrabold text-foreground"
+            className="mt-6 text-center text-3xl font-extrabold text-foreground"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
@@ -134,25 +142,25 @@ export default function SignupPage() {
             Join DevXcelerate
           </motion.h2>
           <motion.p 
-            className="mt-2 text-center text-lg text-muted-foreground"
+            className="mt-2 text-center text-sm text-muted-foreground"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.5 }}
           >
             Or{' '}
             <Link href="/login" className="font-medium text-primary hover:text-primary/80 transition-colors">
-              sign in to your existing account
+              sign in to your account
             </Link>
           </motion.p>
         </div>
         <Card className="mt-8 shadow-xl">
           <CardHeader>
-            <CardTitle className="text-2xl">Create Your Account</CardTitle>
+            <CardTitle>Create Your Account</CardTitle>
             <CardDescription>Step {step} of 3</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
-              {/* <AnimatePresence mode="wait"> */}
+            <form onSubmit={handleSignUp} className="space-y-4">
+              <AnimatePresence mode="wait">
                 {step === 1 && (
                   <motion.div
                     key="step1"
@@ -163,7 +171,7 @@ export default function SignupPage() {
                   >
                     <div className="space-y-4">
                       <div>
-                        <Label htmlFor="username" className="text-lg">Username</Label>
+                        <Label htmlFor="username">Username</Label>
                         <Input
                           id="username"
                           name="username"
@@ -171,11 +179,10 @@ export default function SignupPage() {
                           required
                           value={formData.username}
                           onChange={handleInputChange}
-                          className="mt-1 text-lg p-6"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="email" className="text-lg">Email address</Label>
+                        <Label htmlFor="email">Email address</Label>
                         <Input
                           id="email"
                           name="email"
@@ -184,7 +191,6 @@ export default function SignupPage() {
                           required
                           value={formData.email}
                           onChange={handleInputChange}
-                          className="mt-1 text-lg p-6"
                         />
                       </div>
                     </div>
@@ -200,7 +206,7 @@ export default function SignupPage() {
                   >
                     <div className="space-y-4">
                       <div>
-                        <Label htmlFor="password" className="text-lg">Password</Label>
+                        <Label htmlFor="password">Password</Label>
                         <Input
                           id="password"
                           name="password"
@@ -209,11 +215,10 @@ export default function SignupPage() {
                           required
                           value={formData.password}
                           onChange={handleInputChange}
-                          className="mt-1 text-lg p-6"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="confirmPassword" className="text-lg">Confirm Password</Label>
+                        <Label htmlFor="confirmPassword">Confirm Password</Label>
                         <Input
                           id="confirmPassword"
                           name="confirmPassword"
@@ -222,7 +227,6 @@ export default function SignupPage() {
                           required
                           value={formData.confirmPassword}
                           onChange={handleInputChange}
-                          className="mt-1 text-lg p-6"
                         />
                       </div>
                     </div>
@@ -238,7 +242,14 @@ export default function SignupPage() {
                   >
                     <div className="space-y-4">
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" />
+                        <Checkbox 
+                          id="terms" 
+                          name="terms"
+                          checked={formData.terms}
+                          onCheckedChange={(checked) => 
+                            setFormData(prev => ({ ...prev, terms: checked === true }))
+                          }
+                        />
                         <label
                           htmlFor="terms"
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -247,71 +258,38 @@ export default function SignupPage() {
                         </label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="marketing" />
+                        <Checkbox 
+                          id="marketing" 
+                          name="marketing"
+                          checked={formData.marketing}
+                          onCheckedChange={(checked) => 
+                            setFormData(prev => ({ ...prev, marketing: checked === true }))
+                          }
+                        />
                         <label
                           htmlFor="marketing"
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
-                          I agree to receive marketing emails
+                          I would like to receive promotional emails
                         </label>
                       </div>
                     </div>
                   </motion.div>
                 )}
-              {/* </AnimatePresence> */}
+              </AnimatePresence>
             </form>
           </CardContent>
           <CardFooter>
-            <div className="w-full space-y-4">
-              {step > 1 && (
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  className="w-full" 
-                  onClick={handlePrevStep}
-                >
-                  Back
-                </Button>
-              )}
-              {step < 3 ? (
-                <Button 
-                  type="button" 
-                  className="w-full" 
-                  onClick={handleNextStep}
-                >
-                  Next
-                </Button>
-              ) : (
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  disabled={isLoading}
-                  onClick={handleSignUp}
-                >
-                  {isLoading ? (
-                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                  ) : null}
-                  Create Account
-                </Button>
-              )}
+            <div className="flex items-center justify-between w-full">
+              <Button variant="outline" onClick={handlePrevStep} disabled={step === 1}>
+                Back
+              </Button>
+              <Button onClick={step === 3 ? handleSignUp : handleNextStep} disabled={isLoading}>
+                {step === 3 ? (isLoading ? "Signing up..." : "Sign up") : "Next"}
+              </Button>
             </div>
           </CardFooter>
         </Card>
-        <motion.p 
-          className="mt-4 text-center text-sm text-muted-foreground"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-        >
-          By signing up, you agree to our{' '}
-          <Link href="/terms" className="font-medium text-primary hover:text-primary/80 transition-colors">
-            Terms of Service
-          </Link>{' '}
-          and{' '}
-          <Link href="/privacy" className="font-medium text-primary hover:text-primary/80 transition-colors">
-            Privacy Policy
-          </Link>
-        </motion.p>
       </motion.div>
     </div>
   );

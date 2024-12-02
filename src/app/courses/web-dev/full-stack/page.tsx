@@ -33,7 +33,7 @@ export default function YouTubeVideos() {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch('http://127.0.0.1:8080/api/courses/full_stack')
+    fetch('http://127.0.0.1:4000/api/courses/full_stack')
       .then((response) => response.json())
       .then((data) => {
         setVideos(data.videos.map((video: Video) => ({

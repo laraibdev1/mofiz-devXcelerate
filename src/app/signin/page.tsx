@@ -1,173 +1,207 @@
-'use client'
+'use client';
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { useRouter } from "next/navigation"
-import { Button } from "@/app/components/ui/button"
-import { Input } from "@/app/components/ui/input"
-import { Label } from "@/app/components/ui/label"
-import { Icons } from "@/app/components/ui/icons"
-import { useToast } from "@/app/components/ui/use-toast"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
-
-interface SignInFormData {
-  username: string
-  password: string
+import React, { useState, useEffect } from 'react'; // Make sure to include useEffect
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card";
+import { Icons } from "@/app/components/ui/icons";
+import Link from 'next/link';
+interface Notification {
+  type: 'success' | 'error';
+  message: string;
 }
 
-export default function SignIn() {
-  const [formData, setFormData] = useState<SignInFormData>({
-    username: "",
-    password: "",
-  })
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
-  const { toast } = useToast()
+export default function LoginPage() {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [notification, setNotification] = useState<Notification | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const showNotification = (type: 'success' | 'error', message: string) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 5000); // Hide notification after 5 seconds
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:4000/api/auth/login", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
-      })
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (response.ok) {
-        toast({
-          title: "Welcome back! 👋",
-          description: "Successfully signed in to your account.",
-          duration: 5000,
-        })
-        router.push("/dashboard")
+        showNotification('success', "Login successful! Welcome back to DevXcelerate.");
+        // Here you would typically handle successful login, e.g., storing token, redirecting, etc.
       } else {
-        throw new Error(data.error || "Invalid credentials")
+        throw new Error(data.error || "Failed to login");
       }
-    } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Authentication failed",
-        description: err instanceof Error ? err.message : "Failed to sign in",
-      })
+    } catch (error) {
+      showNotification('error', error instanceof Error ? error.message : "An unexpected error occurred");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
+
+  const formVariants = {
+    hidden: { opacity: 0, x: -50 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.5 } },
+    exit: { opacity: 0, x: 50, transition: { duration: 0.5 } }
+  };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-cyan-100 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-primary/20 to-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      {isMounted && notification && (
+        <div className={`fixed top-4 right-4 p-4 rounded-md ${
+          notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        } text-white`}>
+          {notification.message}
+        </div>
+      )}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        className="max-w-md w-full space-y-8"
+        initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-2xl"
       >
-        <Card className="backdrop-blur-xl bg-white/80 border-t border-l border-white/20 shadow-2xl">
-          <CardHeader className="space-y-3 px-8 pt-8">
-            <motion.div
-              initial={{ scale: 0.5 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 150 }}
-              className="w-24 h-24 mx-auto bg-gradient-to-br from-blue-500 to-cyan-400 rounded-3xl flex items-center justify-center shadow-lg"
-            >
-              <Icons.user className="w-12 h-12 text-white" />
-            </motion.div>
-            <CardTitle className="text-4xl font-bold text-center bg-gradient-to-br from-gray-900 to-gray-600 bg-clip-text text-transparent">
-              Welcome Back
-            </CardTitle>
-            <CardDescription className="text-center text-gray-500 text-lg">
-              Sign in to your account to continue
-            </CardDescription>
+        <div>
+          <motion.div
+            initial={{ scale: 0.5, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 150 }}
+            className="w-32 h-32 mx-auto bg-primary rounded-full flex items-center justify-center shadow-lg"
+          >
+            <Icons.user className="w-16 h-16 text-primary-foreground" />
+          </motion.div>
+          <motion.h2 
+            className="mt-6 text-center text-4xl font-extrabold text-foreground"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            Welcome Back
+          </motion.h2>
+          <motion.p 
+            className="mt-2 text-center text-lg text-muted-foreground"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+          >
+            Don't have an account?{' '}
+            <Link href="/signup" className="font-medium text-primary hover:text-primary/80 transition-colors">
+              Sign up here
+            </Link>
+          </motion.p>
+        </div>
+        <Card className="mt-8 shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-2xl">Login to Your Account</CardTitle>
+            <CardDescription>Enter your credentials to access your account</CardDescription>
           </CardHeader>
-          <CardContent className="p-8">
-            <form onSubmit={handleSignIn} className="space-y-8">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-                className="space-y-3"
-              >
-                <Label htmlFor="username" className="text-gray-700 text-lg">
-                  Username
-                </Label>
-                <Input
-                  id="username"
-                  type="text"
-                  value={formData.username}
-                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  className="h-14 text-lg bg-white/50 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-                  placeholder="Enter your username"
-                  required
-                  disabled={isLoading}
-                />
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 }}
-                className="space-y-3"
-              >
-                <Label htmlFor="password" className="text-gray-700 text-lg">
-                  Password
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="h-14 text-lg bg-white/50 border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-                  placeholder="Enter your password"
-                  required
-                  disabled={isLoading}
-                />
-              </motion.div>
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key="loginForm"
+                  variants={formVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="email" className="text-lg">Email address</Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="mt-1 text-lg p-6"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="password" className="text-lg">Password</Label>
+                      <Input
+                        id="password"
+                        name="password"
+                        type="password"
+                        autoComplete="current-password"
+                        required
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        className="mt-1 text-lg p-6"
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
             </form>
           </CardContent>
-          <CardFooter className="flex flex-col gap-6 p-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="w-full"
-            >
-              <Button
-                type="submit"
-                onClick={handleSignIn}
+          <CardFooter>
+            <div className="w-full space-y-4">
+              <Button 
+                type="submit" 
+                className="w-full" 
                 disabled={isLoading}
-                className="w-full h-14 text-lg bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-medium rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                onClick={handleLogin}
               >
                 {isLoading ? (
-                  <Icons.spinner className="mr-2 h-5 w-5 animate-spin" />
+                  <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
                 ) : null}
-                {isLoading ? "Signing in..." : "Sign In"}
+                Login
               </Button>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="flex flex-col items-center gap-4"
-            >
-              <p className="text-base text-center text-gray-500">
-                Don't have an account?{" "}
-                <a href="/signup" className="text-blue-500 hover:text-blue-600 font-medium">
-                  Sign up
-                </a>
-              </p>
-              <a href="/forgot-password" className="text-sm text-gray-500 hover:text-gray-600">
-                Forgot your password?
-              </a>
-            </motion.div>
+              <div className="text-center">
+                <Link href="/forgot-password" className="text-sm text-primary hover:text-primary/80 transition-colors">
+                  Forgot your password?
+                </Link>
+              </div>
+            </div>
           </CardFooter>
         </Card>
+        <motion.p 
+          className="mt-4 text-center text-sm text-muted-foreground"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+        >
+          By logging in, you agree to our{' '}
+          <Link href="/terms" className="font-medium text-primary hover:text-primary/80 transition-colors">
+            Terms of Service
+          </Link>{' '}
+          and{' '}
+          <Link href="/privacy" className="font-medium text-primary hover:text-primary/80 transition-colors">
+            Privacy Policy
+          </Link>
+        </motion.p>
       </motion.div>
     </div>
-  )
+  );
 }
 

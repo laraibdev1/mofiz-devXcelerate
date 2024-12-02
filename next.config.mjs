@@ -1,13 +1,9 @@
-/** @type {import('next').NextConfig} */
+// next.config.mjs
 const nextConfig = {
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'http://localhost:7000/api/:path*', // Proxy to Flask backend
-      },
-    ];
+  reactStrictMode: true,
+  experimental: {
+    appDir: true,
   },
 };
 
-export default nextConfig; // Use ES module syntax for export
+export default nextConfig;

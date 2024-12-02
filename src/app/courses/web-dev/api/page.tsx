@@ -125,7 +125,7 @@ export default function Home() {
         category: categories[i % (categories.length - 1) + 1],
         views: Math.floor(Math.random() * 10000),
         likes: Math.floor(Math.random() * 1000),
-        url: 'https://example.com/course',
+        url: 'http://localhost:4000/api/courses/api',
         imageUrl: `/placeholder.svg?height=200&width=400&text=Course+${i + 1}`
       }));
       setCourses(mockCourses);
