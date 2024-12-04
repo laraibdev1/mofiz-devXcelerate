@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "./ui/button"
+import { useState, useEffect } from "react";
+import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,105 +13,89 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "./ui/dropdown-menu"
-import { Input } from "./ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
-import { Badge } from "./ui/badge"
-import { Switch } from "./ui/switch"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip"
-import { Bell, Book, ChevronDown, LogOut, Menu, Search, Settings, User } from "lucide-react"
+} from "./ui/dropdown-menu";
+import { Input } from "./ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Badge } from "./ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { Bell, Book, ChevronDown, LogOut, Menu, Search, Settings, User } from "lucide-react";
+import Link from "next/link";
 
 const courseCategories = [
   {
     name: "Web Development",
     courses: [
-      { name: "HTML & CSS Fundamentals", level: "Beginner" },
-      { name: "JavaScript Essentials", level: "Beginner" },
-      { name: "React.js Development", level: "Intermediate" },
-      { name: "Node.js Backend Development", level: "Intermediate" },
-      { name: "Full Stack Web Development", level: "Advanced" },
-      { name: "Web Security & Performance", level: "Advanced" },
-    ]
+      { name: "HTML & CSS Fundamentals", level: "Beginner", link: "/courses/web-dev/fundamentals" },
+      { name: "JavaScript Essentials", level: "Beginner", link: "/courses/web-dev/js" },
+      { name: "React.js Development", level: "Intermediate", link: "/courses/web-dev/react" },
+      { name: "Node.js Backend Development", level: "Intermediate", link: "/courses/web-dev/node-js" },
+      { name: "Full Stack Web Development", level: "Advanced", link: "/courses/web-dev/full-stack" },
+      { name: "Web Security & Performance", level: "Advanced", link: "/courses/web-dev/web-security" },
+    ],
   },
   {
     name: "App Development",
     courses: [
-      { name: "iOS Development with Swift", level: "Intermediate" },
-      { name: "Android Development with Kotlin", level: "Intermediate" },
-      { name: "React Native for Cross-Platform Apps", level: "Intermediate" },
-      { name: "Flutter Development", level: "Intermediate" },
-      { name: "Mobile UX/UI Design", level: "Beginner" },
-      { name: "App Monetization Strategies", level: "Advanced" },
-    ]
+      { name: "iOS Development with Swift", level: "Intermediate", link: "/courses/app-dev/ios" },
+      { name: "Android Development with Kotlin", level: "Intermediate", link: "/courses/app-dev/android" },
+      { name: "React Native for Cross-Platform Apps", level: "Intermediate", link: "/courses/app-dev/react-native" },
+      { name: "Flutter Development", level: "Intermediate", link: "/courses/app-dev/flutter" },
+      { name: "Mobile UX/UI Design", level: "Beginner", link: "/courses/app-dev/mobile-ux-ui" },
+      { name: "App Monetization Strategies", level: "Advanced", link: "/courses/app-dev/monetization" },
+    ],
   },
   {
     name: "DevOps",
     courses: [
-      { name: "Introduction to DevOps", level: "Beginner" },
-      { name: "Containerization with Docker", level: "Intermediate" },
-      { name: "Kubernetes Orchestration", level: "Advanced" },
-      { name: "CI/CD Pipeline Implementation", level: "Intermediate" },
-      { name: "Infrastructure as Code", level: "Advanced" },
-      { name: "Cloud Computing (AWS/Azure/GCP)", level: "Intermediate" },
-    ]
+      { name: "Introduction to DevOps", level: "Beginner", link: "/courses/devops/intro" },
+      { name: "Containerization with Docker", level: "Intermediate", link: "/courses/devops/docker" },
+      { name: "Kubernetes Orchestration", level: "Advanced", link: "/courses/devops/kubernetes" },
+      { name: "CI/CD Pipeline Implementation", level: "Intermediate", link: "/courses/devops/ci-cd" },
+      { name: "Infrastructure as Code", level: "Advanced", link: "/courses/devops/iac" },
+      { name: "Cloud Computing (AWS/Azure/GCP)", level: "Intermediate", link: "/courses/devops/cloud" },
+    ],
   },
   {
     name: "Machine Learning",
     courses: [
-      { name: "Introduction to Machine Learning", level: "Beginner" },
-      { name: "Deep Learning Fundamentals", level: "Intermediate" },
-      { name: "Natural Language Processing", level: "Advanced" },
-      { name: "Computer Vision with Deep Learning", level: "Advanced" },
-      { name: "Reinforcement Learning", level: "Intermediate" },
-      { name: "ML Ops and Deployment", level: "Advanced" },
-    ]
+      { name: "Introduction to Machine Learning", level: "Beginner", link: "/courses/ml/intro" },
+      { name: "Deep Learning Fundamentals", level: "Intermediate", link: "/courses/ml/deep-learning" },
+      { name: "Natural Language Processing", level: "Advanced", link: "/courses/ml/nlp" },
+      { name: "Computer Vision with Deep Learning", level: "Advanced", link: "/courses/ml/computer-vision" },
+      { name: "Reinforcement Learning", level: "Intermediate", link: "/courses/ml/reinforcement" },
+      { name: "ML Ops and Deployment", level: "Advanced", link: "/courses/ml/mlops" },
+    ],
   },
   {
     name: "Data Science",
     courses: [
-      { name: "Python for Data Science", level: "Beginner" },
-      { name: "Statistical Analysis in R", level: "Intermediate" },
-      { name: "Big Data Processing with Spark", level: "Advanced" },
-      { name: "Data Visualization Techniques", level: "Intermediate" },
-      { name: "Predictive Modeling", level: "Advanced" },
-      { name: "Ethics in Data Science", level: "Intermediate" },
-    ]
+      { name: "Python for Data Science", level: "Beginner", link: "/courses/data-science/python" },
+      { name: "Statistical Analysis in R", level: "Intermediate", link: "/courses/data-science/r-stats" },
+      { name: "Big Data Processing with Spark", level: "Advanced", link: "/courses/data-science/spark" },
+      { name: "Data Visualization Techniques", level: "Intermediate", link: "/courses/data-science/visualization" },
+      { name: "Predictive Modeling", level: "Advanced", link: "/courses/data-science/predictive-modeling" },
+      { name: "Ethics in Data Science", level: "Intermediate", link: "/courses/data-science/ethics" },
+    ],
   },
-  {
-    name: "Data Analytics",
-    courses: [
-      { name: "SQL for Data Analysis", level: "Beginner" },
-      { name: "Business Intelligence Tools", level: "Intermediate" },
-      { name: "Data Warehousing Concepts", level: "Intermediate" },
-      { name: "Advanced Excel for Analytics", level: "Intermediate" },
-      { name: "Data Storytelling", level: "Advanced" },
-      { name: "A/B Testing and Experimentation", level: "Advanced" },
-    ]
-  },
-]
+];
 
 export default function ModernHeader() {
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [notifications, setNotifications] = useState(3)
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [notifications, setNotifications] = useState(3);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  useEffect(() => {
-    document.body.classList.toggle("dark", isDarkMode)
-  }, [isDarkMode])
-
-  const filteredCategories = courseCategories.filter(category =>
+  const filteredCategories = courseCategories.filter((category) =>
     category.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  );
 
   return (
     <TooltipProvider>
@@ -147,11 +131,13 @@ export default function ModernHeader() {
                           <DropdownMenuLabel>Courses</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           {category.courses.map((course) => (
-                            <DropdownMenuItem key={course.name}>
-                              <span>{course.name}</span>
-                              <Badge variant="secondary" className="ml-2">
-                                {course.level}
-                              </Badge>
+                            <DropdownMenuItem key={course.name} asChild>
+                              <Link href={course.link} className="flex items-center justify-between w-full">
+                                <span>{course.name}</span>
+                                <Badge variant="secondary">
+                                  {course.level}
+                                </Badge>
+                              </Link>
                             </DropdownMenuItem>
                           ))}
                         </DropdownMenuSubContent>
@@ -165,7 +151,7 @@ export default function ModernHeader() {
               <Button variant="ghost">Community</Button>
             </nav>
 
-            {/* Search, Notifications, Dark Mode, and User Profile */}
+            {/* Search, Notifications, and User Profile */}
             <div className="hidden md:flex items-center space-x-4">
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -206,37 +192,15 @@ export default function ModernHeader() {
                 </TooltipContent>
               </Tooltip>
 
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Switch
-                      checked={isDarkMode}
-                      onCheckedChange={setIsDarkMode}
-                      className="data-[state=checked]:bg-primary"
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{isDarkMode ? "Light Mode" : "Dark Mode"}</p>
-                </TooltipContent>
-              </Tooltip>
-
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                      <AvatarFallback>JD</AvatarFallback>
-                    </Avatar>
-                  </Button>
+                  <Avatar className="cursor-pointer">
+                    <AvatarImage src="https://avatar.com/user.png" alt="User" />
+                    <AvatarFallback>MM</AvatarFallback>
+                  </Avatar>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">John Doe</p>
-                      <p className="text-xs leading-none text-muted-foreground">john.doe@example.com</p>
-                    </div>
-                  </DropdownMenuLabel>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <User className="mr-2 h-4 w-4" />
@@ -246,7 +210,6 @@ export default function ModernHeader() {
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
@@ -255,83 +218,38 @@ export default function ModernHeader() {
               </DropdownMenu>
             </div>
 
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Open menu"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              >
-                <Menu className="h-6 w-6" />
-              </Button>
-            </div>
+            {/* Mobile Menu */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
           <nav className="md:hidden bg-background border-t">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              {courseCategories.map((category) => (
-                <DropdownMenu key={category.name}>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="w-full justify-start">
-                      {category.name} <ChevronDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    {category.courses.map((course) => (
-                      <DropdownMenuItem key={course.name}>
-                        <span>{course.name}</span>
-                        <Badge variant="secondary" className="ml-2">
-                          {course.level}
-                        </Badge>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ))}
-              <Button variant="ghost" className="w-full justify-start">Programs</Button>
-              <Button variant="ghost" className="w-full justify-start">Resources</Button>
-              <Button variant="ghost" className="w-full justify-start">Community</Button>
-            </div>
-            <div className="px-2 pt-2 pb-3">
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search courses..."
-                  className="pl-8 w-full"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="px-2 pt-2 pb-3 flex items-center justify-between">
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
-                {notifications > 0 && (
-                  <Badge
-                    variant="destructive"
-                    className="absolute -top-1 -right-1 px-1 min-w-[1.25rem] h-5"
-                  >
-                    {notifications}
-                  </Badge>
-                )}
-              </Button>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm">{isDarkMode ? "Dark" : "Light"} Mode</span>
-                <Switch
-                  checked={isDarkMode}
-                  onCheckedChange={setIsDarkMode}
-                  className="data-[state=checked]:bg-primary"
-                />
-              </div>
-            </div>
+            <ul>
+              <li>
+                <Link href="/courses">Courses</Link>
+              </li>
+              <li>
+                <Link href="/programs">Programs</Link>
+              </li>
+              <li>
+                <Link href="/resources">Resources</Link>
+              </li>
+              <li>
+                <Link href="/community">Community</Link>
+              </li>
+            </ul>
           </nav>
         )}
       </header>
     </TooltipProvider>
-  )
-} 
+  );
+}

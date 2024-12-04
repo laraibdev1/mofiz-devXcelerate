@@ -1,7 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: ["class"], // Enable dark mode
   content: [
-    './src/**/*.{js,ts,jsx,tsx}', // Adjust according to your project structure
+    './src/**/*.{js,ts,jsx,tsx}', // Include your project structure
+    './pages/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}',
   ],
   theme: {
     extend: {
@@ -12,5 +16,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('tailwindcss-animate')], // Include plugins
 };
