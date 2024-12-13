@@ -2,7 +2,7 @@
 
 import { useState, useEffect, ReactElement } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,10 +14,10 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+} from "@/app/components/ui/dropdown-menu";
+import { Input } from "@/app/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Badge } from "@/app/components/ui/badge";
 import { Bell, Book, ChevronDown, LogOut, Menu, Search, Settings, User } from 'lucide-react';
 
 const courseCategories = [
