@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, ReactElement } from "react";
-import { Button } from "./ui/button";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,13 +14,11 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "./ui/dropdown-menu";
-import { Input } from "./ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Badge } from "./ui/badge";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Bell, Book, ChevronDown, LogOut, Menu, Search, Settings, User } from 'lucide-react';
-import Link from "next/link";
 
 const courseCategories = [
   {
@@ -173,24 +172,17 @@ export default function ModernHeader(): ReactElement {
               )}
             </div>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative" aria-label={`${notifications} notifications`}>
-                  <Bell className="h-5 w-5" />
-                  {notifications > 0 && (
-                    <Badge
-                      variant="destructive"
-                      className="absolute -top-1 -right-1 px-1 min-w-[1.25rem] h-5"
-                    >
-                      {notifications}
-                    </Badge>
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Notifications</p>
-              </TooltipContent>
-            </Tooltip>
+            <Button variant="ghost" size="icon" className="relative" aria-label={`${notifications} notifications`}>
+              <Bell className="h-5 w-5" />
+              {notifications > 0 && (
+                <Badge
+                  variant="destructive"
+                  className="absolute -top-1 -right-1 px-1 min-w-[1.25rem] h-5"
+                >
+                  {notifications}
+                </Badge>
+              )}
+            </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
