@@ -11,7 +11,7 @@ import { Label } from "@/app/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs"
 import { Eye, ThumbsUp, ExternalLink, BookOpen, Search, SortAsc, SortDesc } from 'lucide-react'
-
+import ModernHeader from '@/app/components/Header';
 interface Video {
   url: string;
   title: string;
@@ -33,7 +33,7 @@ export default function YouTubeVideos() {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch('http://127.0.0.1:8080/api/courses/html_css')
+    fetch('http://127.0.0.1:8080/api/courses/react')
       .then((response) => response.json())
       .then((data) => {
         setVideos(data.videos.map((video: Video) => ({
@@ -76,16 +76,17 @@ export default function YouTubeVideos() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background text-foreground">
+      <ModernHeader/>
       <div className="container mx-auto px-4 py-12">
         <motion.h1 
-          className="text-4xl font-bold text-center mb-8 text-gray-800"
+          className="text-4xl font-bold text-center mb-8 text-primary"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <BookOpen className="inline-block mr-2 mb-1 text-blue-600" />
-          Html Css Fundamentals Tutorial
+          <BookOpen className="inline-block mr-2 mb-1" />
+          Python Tutorial Videos
         </motion.h1>
 
         <motion.div 
@@ -96,11 +97,9 @@ export default function YouTubeVideos() {
         >
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-grow">
-              <Label htmlFor="search" className="sr-only">Search
-
-              </Label>
+              <Label htmlFor="search" className="sr-only">Search</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="search"
                   type="text"
@@ -189,7 +188,7 @@ export default function YouTubeVideos() {
                       <motion.div key={index} variants={cardVariants} whileHover="hover">
                         <Card className="overflow-hidden flex flex-col h-full shadow-md hover:shadow-xl transition-shadow duration-300">
                           <CardHeader className="p-0">
-                            <div className="relative pb-[56.25%] h-0 bg-gray-100">
+                            <div className="relative pb-[56.25%] h-0 bg-muted">
                               <iframe
                                 src={`https://www.youtube.com/embed/${getYouTubeVideoId(video.url)}`}
                                 frameBorder="0"
@@ -200,26 +199,26 @@ export default function YouTubeVideos() {
                             </div>
                           </CardHeader>
                           <CardContent className="flex-grow p-6">
-                            <Badge className="mb-2 bg-blue-100 text-blue-800">{video.category}</Badge>
-                            <CardTitle className="text-xl font-bold mb-3 text-gray-800 line-clamp-2 hover:line-clamp-none transition-all duration-300">
+                            <Badge className="mb-2 bg-primary/10 text-primary">{video.category}</Badge>
+                            <CardTitle className="text-xl font-bold mb-3 line-clamp-2 hover:line-clamp-none transition-all duration-300">
                               {video.title}
                             </CardTitle>
-                            <p className="text-sm text-gray-600 mb-4 line-clamp-3 hover:line-clamp-none transition-all duration-300">
+                            <p className="text-sm text-muted-foreground mb-4 line-clamp-3 hover:line-clamp-none transition-all duration-300">
                               {video.description || 'No description available'}
                             </p>
                             <div className="flex justify-between items-center">
-                              <Badge variant="secondary" className="flex items-center gap-1 bg-gray-100 text-gray-800">
+                              <Badge variant="secondary" className="flex items-center gap-1">
                                 <Eye className="w-3 h-3" />
                                 {formatNumber(video.views)}
                               </Badge>
-                              <Badge variant="secondary" className="flex items-center gap-1 bg-gray-100 text-gray-800">
+                              <Badge variant="secondary" className="flex items-center gap-1">
                                 <ThumbsUp className="w-3 h-3" />
                                 {formatNumber(video.likes)}
                               </Badge>
                             </div>
                           </CardContent>
                           <CardFooter className="p-6 pt-0">
-                            <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 transition-colors duration-300">
+                            <Button asChild className="w-full">
                               <a href={video.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
                                 Watch Video
                                 <ExternalLink className="w-4 h-4 ml-2" />
@@ -266,7 +265,7 @@ export default function YouTubeVideos() {
                         <Card className="overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
                           <div className="flex flex-col md:flex-row items-start p-4">
                             <div className="w-full md:w-40 mb-4 md:mb-0 md:mr-4">
-                              <div className="relative pb-[56.25%] h-0 bg-gray-100">
+                              <div className="relative pb-[56.25%] h-0 bg-muted">
                                 <iframe
                                   src={`https://www.youtube.com/embed/${getYouTubeVideoId(video.url)}`}
                                   frameBorder="0"
@@ -277,24 +276,24 @@ export default function YouTubeVideos() {
                               </div>
                             </div>
                             <div className="flex-grow">
-                              <Badge className="mb-2 bg-blue-100 text-blue-800">{video.category}</Badge>
-                              <CardTitle className="text-lg font-bold mb-2 text-gray-800">
+                              <Badge className="mb-2 bg-primary/10 text-primary">{video.category}</Badge>
+                              <CardTitle className="text-lg font-bold mb-2">
                                 {video.title}
                               </CardTitle>
-                              <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                              <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
                                 {video.description || 'No description available'}
                               </p>
                               <div className="flex justify-between items-center mb-2">
-                                <Badge variant="secondary" className="flex items-center gap-1 bg-gray-100 text-gray-800">
+                                <Badge variant="secondary" className="flex items-center gap-1">
                                   <Eye className="w-3 h-3" />
                                   {formatNumber(video.views)}
                                 </Badge>
-                                <Badge variant="secondary" className="flex items-center gap-1 bg-gray-100 text-gray-800">
+                                <Badge variant="secondary" className="flex items-center gap-1">
                                   <ThumbsUp className="w-3 h-3" />
                                   {formatNumber(video.likes)}
                                 </Badge>
                               </div>
-                              <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 transition-colors duration-300">
+                              <Button asChild className="w-full">
                                 <a href={video.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
                                   Watch Video
                                   <ExternalLink className="w-4 h-4 ml-2" />

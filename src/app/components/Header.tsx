@@ -18,7 +18,7 @@ import { Input } from "./ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
-import { Bell, Book, ChevronDown, LogOut, Menu, Search, Settings, User } from "lucide-react";
+import { Bell, Book, ChevronDown, LogOut, Menu, Search, Settings, User } from 'lucide-react';
 import Link from "next/link";
 
 const courseCategories = [
@@ -161,6 +161,7 @@ export default function ModernHeader() {
                   className="pl-8 w-64"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Search courses"
                 />
                 {searchQuery && (
                   <div className="absolute mt-1 w-full bg-background border rounded-md shadow-lg">
@@ -175,7 +176,7 @@ export default function ModernHeader() {
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative">
+                  <Button variant="ghost" size="icon" className="relative" aria-label={`${notifications} notifications`}>
                     <Bell className="h-5 w-5" />
                     {notifications > 0 && (
                       <Badge
@@ -210,9 +211,16 @@ export default function ModernHeader() {
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
+                  <DropdownMenuItem asChild>
+                    <Link href="/signup" className="flex items-center">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Register</span>
+                    </Link>
+                  <DropdownMenuItem asChild>
+                    <Link href="/signin" className="flex items-center">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Login</span>
+                    </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -224,6 +232,7 @@ export default function ModernHeader() {
               size="icon"
               className="md:hidden"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle mobile menu"
             >
               <Menu className="h-5 w-5" />
             </Button>
@@ -233,18 +242,18 @@ export default function ModernHeader() {
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
           <nav className="md:hidden bg-background border-t">
-            <ul>
-              <li>
-                <Link href="/courses">Courses</Link>
+            <ul className="py-2">
+              <li className="px-4 py-2">
+                <Link href="/courses" className="block">Courses</Link>
               </li>
-              <li>
-                <Link href="/programs">Programs</Link>
+              <li className="px-4 py-2">
+                <Link href="/programs" className="block">Programs</Link>
               </li>
-              <li>
-                <Link href="/resources">Resources</Link>
+              <li className="px-4 py-2">
+                <Link href="/resources" className="block">Resources</Link>
               </li>
-              <li>
-                <Link href="/community">Community</Link>
+              <li className="px-4 py-2">
+                <Link href="/community" className="block">Community</Link>
               </li>
             </ul>
           </nav>
@@ -253,3 +262,4 @@ export default function ModernHeader() {
     </TooltipProvider>
   );
 }
+
