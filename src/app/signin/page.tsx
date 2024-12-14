@@ -111,7 +111,8 @@ export default function LoginPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.5 }}
           >
-            Don't have an account?{' '}
+           <p>Don&apos;t have an account?</p>
+
             <Link href="/signup" className="font-medium text-primary hover:text-primary/80 transition-colors">
               Sign up here
             </Link>
@@ -172,9 +173,9 @@ export default function LoginPage() {
                 disabled={isLoading}
                 onClick={handleLogin}
               >
-                {isLoading ? (
-                  <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
+                {/* {isLoading ? ( */}
+                  {/* // <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" /> */}
+                {/* // ) : null} */}
                 Login
               </Button>
               <div className="text-center">

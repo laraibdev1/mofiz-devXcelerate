@@ -1,5 +1,5 @@
 import React from "react";
-import { ThemeProvider } from "./providers"
+import { ThemeProvider } from "next-themes"; // Import ThemeProvider
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -30,15 +30,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
- <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        {/* Wrap children with ThemeProvider */}
+        <ThemeProvider attribute="class">
           {children}
-        </ThemeProvider>    
-    {/* </UserProvider> */}
+        </ThemeProvider>
       </body>
     </html>
   );

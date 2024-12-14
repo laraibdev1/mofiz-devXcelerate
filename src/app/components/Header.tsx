@@ -18,7 +18,8 @@ import {
 import { Input } from "@/app/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { Badge } from "@/app/components/ui/badge";
-import { Bell, Book, ChevronDown, LogOut, Menu, Search, Settings, User } from 'lucide-react';
+import { Bell, Book, ChevronDown, LogOut, Menu, Search, Settings, User, Moon, Sun } from 'lucide-react';
+import { useTheme } from "next-themes";
 
 const courseCategories = [
   {
@@ -83,6 +84,7 @@ export default function ModernHeader(): ReactElement {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [notifications, setNotifications] = useState<number>(3);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const handleScroll = (): void => {
@@ -147,6 +149,14 @@ export default function ModernHeader(): ReactElement {
             <Button variant="ghost">Programs</Button>
             <Button variant="ghost">Resources</Button>
             <Button variant="ghost">Community</Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              aria-label="Toggle theme"
+            >
+              {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+            </Button>
           </nav>
 
           {/* Search, Notifications, and User Profile */}
@@ -187,8 +197,8 @@ export default function ModernHeader(): ReactElement {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Avatar className="cursor-pointer">
-                  <AvatarImage src="https://avatar.com/user.png" alt="User" />
-                  <AvatarFallback>MM</AvatarFallback>
+                  <AvatarImage src="/image.png" alt="Mofiz" />
+                  <AvatarFallback>MF</AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -246,6 +256,25 @@ export default function ModernHeader(): ReactElement {
             </li>
             <li className="px-4 py-2">
               <Link href="/community" className="block">Community</Link>
+            </li>
+            <li className="px-4 py-2">
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              >
+                {theme === "light" ? (
+                  <>
+                    <Moon className="h-5 w-5 mr-2" />
+                    Dark Mode
+                  </>
+                ) : (
+                  <>
+                    <Sun className="h-5 w-5 mr-2" />
+                    Light Mode
+                  </>
+                )}
+              </Button>
             </li>
           </ul>
         </nav>
